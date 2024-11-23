@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { MoreVertical, Wand2, Copy, Share2, Trash2 } from 'lucide-react';
+import ImageModal from './ImageModal';
 
 export interface GalleryImage {
   id: number;
@@ -46,6 +47,7 @@ export const Gallery: React.FC<GalleryProps> = ({
   onImagesChange
 }) => {
   const [activeDropdownId, setActiveDropdownId] = React.useState<number | null>(null);
+  const [selectedImage, setSelectedImage] = React.useState<GalleryImage | null>(null);
   const menuRef = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   // Handle click outside to close menu
@@ -99,9 +101,9 @@ export const Gallery: React.FC<GalleryProps> = ({
     setActiveDropdownId(null);
   };
 
-  const filteredImages = images.filter(image =>
-    image.prompt.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredImages = searchQuery.trim()
+    ? images.filter(image => image.prompt.toLowerCase().includes(searchQuery.toLowerCase().trim()))
+    : images;
 
   if (viewMode === 'chat') {
     return null;
@@ -112,13 +114,20 @@ export const Gallery: React.FC<GalleryProps> = ({
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {filteredImages.map((image) => (
           <div key={image.id} className="relative group">
-            <img
-              src={image.url}
-              alt={image.prompt}
-              className="w-full aspect-square object-cover rounded-lg"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity rounded-lg" />
-            
+            <div 
+              className="cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(image);
+              }}
+            >
+              <img
+                src={image.url}
+                alt={image.prompt}
+                className="w-full aspect-square object-cover rounded-lg"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity rounded-lg" />
+            </div>
             {/* Dropdown Toggle */}
             <button
               onClick={() => setActiveDropdownId(activeDropdownId === image.id ? null : image.id)}
@@ -173,6 +182,10 @@ export const Gallery: React.FC<GalleryProps> = ({
           </div>
         ))}
       </div>
+      <ImageModal 
+        image={selectedImage}
+        onClose={() => setSelectedImage(null)}
+      />
     </div>
   );
 };

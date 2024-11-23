@@ -1,144 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { Gallery, mockImages, GalleryImage } from '../components/Gallery';
 import { ToolPanel } from '../components/ToolPanel';
 import PromptPanel from '../components/PromptPanel';
-import { Search } from 'lucide-react';
 import ViewModeToggle from '../components/ViewModeToggle';
-import UserMenu from '../components/UserMenu';
 import ChatView from '../components/ChatView';
+
+const STORAGE_KEY = 'colorscribe-gallery-images';
 
 const HomePage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'chat'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [selectedDimensions, setSelectedDimensions] = useState('1024x1024');
   const [selectedEngine, setSelectedEngine] = useState('stable-diffusion-xl');
   const [isGenerating, setIsGenerating] = useState(false);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(() => {
-    // Initialize from localStorage if available, otherwise use mockImages
-    const savedImages = localStorage.getItem('galleryImages');
-    return savedImages ? JSON.parse(savedImages) : mockImages;
+    // Initialize from localStorage or use mockImages as fallback
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : mockImages;
   });
 
   // Save to localStorage whenever images change
   useEffect(() => {
-    localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(galleryImages));
   }, [galleryImages]);
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
+    if (!prompt) {
       toast.error('Please enter a prompt');
       return;
     }
 
     setIsGenerating(true);
-    const loadingToast = toast.loading('Generating your image...');
-
     try {
-      // Mock image generation delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Mock image generation
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Create mock generated image
-      const newImage = {
-        id: Date.now(),
-        url: `https://picsum.photos/seed/colorscribe${Date.now()}/1024`,
+      // Create a new mock image
+      const newImage: GalleryImage = {
+        id: Date.now(), // Use timestamp as a unique ID
+        url: `https://picsum.photos/seed/${Date.now()}/1024`, // Random image with unique seed
         prompt: prompt,
         dimensions: selectedDimensions,
         engine: selectedEngine
       };
 
-      setGalleryImages(prev => [newImage, ...prev]);
-      toast.success('Image generated successfully!', { id: loadingToast });
-      setPrompt('');
+      // Add the new image to the gallery
+      setGalleryImages(prevImages => [newImage, ...prevImages]);
+      setPrompt(''); // Clear the prompt
+      toast.success('Image generated successfully!');
     } catch (error) {
-      toast.error('Failed to generate image', { id: loadingToast });
+      toast.error('Failed to generate image');
+      console.error('Image generation error:', error);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleLogout = () => {
-    // Add logout logic here
-    console.log('Logging out...');
-  };
-
   return (
-    <div className="flex flex-col h-screen bg-gray-900">
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#1f2937',
-            color: '#fff',
-            borderRadius: '8px',
-          },
-          success: {
-            iconTheme: {
-              primary: '#10b981',
-              secondary: '#fff',
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: '#ef4444',
-              secondary: '#fff',
-            },
-          },
-        }}
-      />
-      <nav className="h-16 border-b border-gray-800 flex items-center justify-between px-4 bg-gray-900">
-        {/* Left side with search */}
-        <div className="flex-1 flex items-center gap-4 max-w-4xl">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={viewMode === 'grid' ? "Search your images and prompts..." : "Search chat history..."}
-              className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500"
-            />
-          </div>
-        </div>
-
-        {/* Right side with user menu */}
-        <UserMenu 
-          isOpen={isUserMenuOpen}
-          onToggle={() => setIsUserMenuOpen(!isUserMenuOpen)}
-          onLogout={handleLogout}
-        />
-      </nav>
-
+    <div className="flex flex-col h-full">
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col">
-          <div className="flex-1 overflow-hidden flex flex-col">
-            <div className="p-4">
-              <div className="flex justify-end mb-4">
-                <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
-              </div>
-            </div>
-            <div className="flex-1 relative">
-              {viewMode === 'chat' ? (
-                <ChatView images={galleryImages} />
-              ) : (
-                <div className="absolute inset-0 overflow-auto">
-                  <div className="p-4">
-                    <Gallery 
-                      viewMode={viewMode} 
-                      searchQuery={searchQuery}
-                      onPromptChange={setPrompt}
-                      onDimensionsChange={setSelectedDimensions}
-                      onEngineChange={setSelectedEngine}
-                      images={galleryImages}
-                      onImagesChange={setGalleryImages}
-                    />
-                  </div>
+          <div className="p-4">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="relative flex-1 max-w-2xl">
+                <input
+                  type="text"
+                  placeholder="Search your images..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-4 pr-10 py-2 text-gray-200 focus:outline-none focus:border-blue-500"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
                 </div>
-              )}
+              </div>
+              <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
             </div>
+          </div>
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {viewMode === 'chat' ? (
+              <div className="flex-1 overflow-hidden">
+                <ChatView images={galleryImages} />
+              </div>
+            ) : (
+              <div className="flex-1 overflow-auto p-4">
+                <Gallery 
+                  viewMode={viewMode} 
+                  searchQuery={searchQuery}
+                  onPromptChange={setPrompt}
+                  onDimensionsChange={setSelectedDimensions}
+                  onEngineChange={setSelectedEngine}
+                  images={galleryImages}
+                  onImagesChange={setGalleryImages}
+                />
+              </div>
+            )}
           </div>
           {viewMode === 'grid' && (
             <PromptPanel 

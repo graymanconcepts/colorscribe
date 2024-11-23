@@ -10,7 +10,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ isOpen, onToggle, onLogout }) => {
   return (
-    <div className="relative ml-4">
+    <div className="relative">
       <button
         onClick={onToggle}
         className="flex items-center gap-2 p-1 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white"

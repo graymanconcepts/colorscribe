@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Home, Image, Library, CreditCard, User, Settings, Users } from 'lucide-react';
+import Layout from './components/Layout';
 import Sidebar from './components/Sidebar';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
@@ -25,17 +26,19 @@ function App() {
     <Router>
       <div className="flex h-screen bg-gray-900">
         <Sidebar items={navItems} />
-        <main className="flex-1 overflow-auto">
+        <div className="flex-1">
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/explore" element={<ExplorePage />} />
-            <Route path="/library" element={<LibraryPage />} />
-            <Route path="/payments" element={<PaymentsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/partners" element={<PartnersPage />} />
+            <Route element={<Layout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/explore" element={<ExplorePage />} />
+              <Route path="/library" element={<LibraryPage />} />
+              <Route path="/payments" element={<PaymentsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/partners" element={<PartnersPage />} />
+            </Route>
           </Routes>
-        </main>
+        </div>
       </div>
     </Router>
   );
