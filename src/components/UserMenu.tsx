@@ -28,6 +28,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ isOpen, onToggle, onLogout }) => {
             <p className="text-xs text-gray-400">john.doe@example.com</p>
           </div>
           <Link
+            to="/profile"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+            onClick={onToggle}
+          >
+            <User className="h-4 w-4" />
+            My Page
+          </Link>
+          <Link
             to="/settings"
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
             onClick={onToggle}
