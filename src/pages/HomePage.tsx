@@ -84,7 +84,10 @@ const HomePage: React.FC = () => {
           <div className="flex-1 flex flex-col overflow-hidden">
             {viewMode === 'chat' ? (
               <div className="flex-1 overflow-hidden">
-                <ChatView images={galleryImages} />
+                <ChatView 
+                  images={galleryImages}
+                  viewMode={viewMode}
+                />
               </div>
             ) : (
               <div className="flex-1 overflow-auto p-4">
