@@ -20,10 +20,6 @@ export const ToolPanel: React.FC<ToolPanelProps> = ({
   const [promptGuidance, setPromptGuidance] = useState(7.5);
   const [quality, setQuality] = useState('standard');
 
-  if (viewMode === 'chat') {
-    return null;
-  }
-
   const engines = [
     { id: 'stable-diffusion-xl', name: 'Stable Diffusion XL' },
     { id: 'dall-e-3', name: 'DALL-E 3' },
