@@ -1,6 +1,6 @@
 # ColorScribe
 
-ColorScribe is a modern web application that helps you manage and organize your color palettes efficiently. Built with React and TypeScript, it provides an intuitive interface for creating, storing, and managing AI generated images for your use.
+ColorScribe is a modern web application that harnesses the power of AI to generate stunning artwork. Built with React and TypeScript, it provides an intuitive interface for creating, customizing, and managing AI-generated images for your creative projects.
 
 ## 📸 Screenshot
 
@@ -79,7 +79,7 @@ yarn lint
 
 ## 📝 License
 
-[Your chosen license]
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 ---
 
